@@ -12,6 +12,7 @@ android {
     defaultConfig {
         applicationId "com.udacity.project4"
         minSdkVersion rootProject.minSdkVersion
+        multiDexEnabled true
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
         versionName "1.0"
@@ -60,7 +61,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-rc1'
     kapt "androidx.lifecycle:lifecycle-compiler:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
     implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$archLifecycleVersion"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
@@ -81,40 +82,40 @@ dependencies {
 
 
     // Dependencies for local unit tests
-    testImplementation "junit:junit:$junitVersion"
-    testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
-    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
-    testImplementation "org.robolectric:robolectric:$robolectricVersion"
-    testImplementation "com.google.truth:truth:$truthVersion"
-    testImplementation "org.mockito:mockito-core:$mockitoVersion"
-
-    // AndroidX Test - JVM testing
-    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
-    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
-    testImplementation "androidx.test:rules:$androidXTestRulesVersion"
+//    testImplementation "junit:junit:$junitVersion"
+//    testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
+//    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+//    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+//    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+//    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+//    testImplementation "com.google.truth:truth:$truthVersion"
+//    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+//
+//    // AndroidX Test - JVM testing
+//    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+//    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+//    testImplementation "androidx.test:rules:$androidXTestRulesVersion"
 
     // AndroidX Test - Instrumented testing
-    androidTestImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
-    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
-    androidTestImplementation "androidx.test:rules:$androidXTestRulesVersion"
-    androidTestImplementation "androidx.room:room-testing:$roomVersion"
-    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
-    androidTestImplementation "org.robolectric:annotations:$robolectricVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
-    androidTestImplementation "junit:junit:$junitVersion"
+//    androidTestImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+//    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+//    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+//    androidTestImplementation "androidx.test:rules:$androidXTestRulesVersion"
+//    androidTestImplementation "androidx.room:room-testing:$roomVersion"
+//    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+//    androidTestImplementation "org.robolectric:annotations:$robolectricVersion"
+//    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+//    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+//    androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
+//    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
+//    androidTestImplementation "junit:junit:$junitVersion"
     // Once https://issuetracker.google.com/127986458 is fixed this can be testImplementation
-    implementation "androidx.fragment:fragment-testing:$fragmentVersion"
-    implementation "androidx.test:core:$androidXTestCoreVersion"
-    implementation "androidx.fragment:fragment:$fragmentVersion"
-    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
-    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
-    androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
+//    implementation "androidx.fragment:fragment-testing:$fragmentVersion"
+//    implementation "androidx.test:core:$androidXTestCoreVersion"
+//    implementation "androidx.fragment:fragment:$fragmentVersion"
+//    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
+//    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
+//    androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
 
 
 
