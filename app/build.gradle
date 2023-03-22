@@ -38,6 +38,7 @@ android {
     //}
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
 }
 
@@ -67,6 +68,10 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
     implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+
+    //Firebase Dependencies
+    implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
+    implementation platform('com.google.firebase:firebase-bom:31.2.1')
 
     //Room dependencies
     implementation "androidx.room:room-ktx:$roomVersion"
