@@ -66,7 +66,8 @@ class LoginFragment : Fragment() {
         }
         viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> navController.popBackStack()
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> navController.navigate(
+                    LoginFragmentDirections.actionLoginFragmentToReminderListFragment())
                 else -> Log.e(
                     TAG,
                     "Authentication state that doesn't require any UI change $authenticationState"
@@ -97,6 +98,7 @@ class LoginFragment : Fragment() {
                     "Successfully signed in user " +
                             "${FirebaseAuth.getInstance().currentUser?.displayName}!"
                 )
+                findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToReminderListFragment())
             } else {
                 Log.i(TAG, "Sign in unsuccessful ${response?.error?.errorCode}")
             }
