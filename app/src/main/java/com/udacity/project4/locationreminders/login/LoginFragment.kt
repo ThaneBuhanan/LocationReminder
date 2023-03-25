@@ -67,7 +67,8 @@ class LoginFragment : Fragment() {
         viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
                 LoginViewModel.AuthenticationState.AUTHENTICATED -> navController.navigate(
-                    LoginFragmentDirections.actionLoginFragmentToReminderListFragment())
+                    LoginFragmentDirections.actionLoginFragmentToReminderListFragment()
+                )
                 else -> Log.e(
                     TAG,
                     "Authentication state that doesn't require any UI change $authenticationState"
@@ -81,11 +82,14 @@ class LoginFragment : Fragment() {
             AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build()
         )
 
-        startActivityForResult(
-            AuthUI.getInstance().createSignInIntentBuilder().setLogo(R.drawable.map).setAvailableProviders(
+        val authUi = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setLogo(R.drawable.map)
+            .setAvailableProviders(
                 providers
-            ).build(), SIGN_IN_RESULT_CODE
-        )
+            ).build()
+
+        startActivityForResult(authUi, SIGN_IN_RESULT_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
