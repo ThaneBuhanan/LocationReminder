@@ -42,4 +42,5 @@
     <string name="error_adding_geofence">Error Happened, Can\'t Add Geofence</string>
     <string name="location_welcome">Welcome to the location reminder app</string>
     <string name="auth_button">Login</string>
+    <string name="Save">Save</string>
 </resources>
