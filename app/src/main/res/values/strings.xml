@@ -43,4 +43,5 @@
     <string name="location_welcome">Welcome to the location reminder app</string>
     <string name="auth_button">Login</string>
     <string name="Save">Save</string>
+    <string name="geofence_added">Geofence added.</string>
 </resources>
