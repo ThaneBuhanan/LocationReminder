@@ -108,11 +108,9 @@ class SaveReminderFragment : BaseFragment() {
             .addGeofence(geofence)
             .build()
 
-        val geofenceAdded = getString(R.string.geofence_added)
         val geofencesNotAdded = getString(R.string.geofences_not_added)
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
             addOnSuccessListener {
-                _viewModel.showToast.value = geofenceAdded
                 _viewModel.navigationCommand.value = NavigationCommand.Back
                 Log.e("Add Geofence", geofence.requestId)
             }
