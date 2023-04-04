@@ -5,14 +5,12 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.*
@@ -85,18 +83,31 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult?) {
+            locationResult ?: return
+
+            val zoomLevel = 15f
+            for (location in locationResult.locations) {
+                val longitude: Double = location.longitude
+                val latitude: Double = location.latitude
+
+                val homeLatLng = LatLng(latitude, longitude)
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
+            }
+        }
+    }
 
     @SuppressLint("MissingPermission")
     private fun moveCameraToCurrentLocation() {
-        val zoomLevel = 15f
-
-        val lm = getSystemService(requireContext(), LocationManager::class.java)
-        val location: Location = lm!!.getLastKnownLocation(LocationManager.GPS_PROVIDER)!!
-        val longitude: Double = location.longitude
-        val latitude: Double = location.latitude
-
-        val homeLatLng = LatLng(latitude, longitude)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
+        val fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireActivity())
+        val locationRequest = LocationRequest()
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 
     @SuppressLint("MissingPermission")
