@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.udacity.project4.R
 import com.udacity.project4.databinding.ActivityAuthenticationBinding
 import com.udacity.project4.locationreminders.RemindersActivity
+import com.udacity.project4.locationreminders.login.FirebaseUserLiveData
 
 class AuthenticationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthenticationBinding
@@ -22,7 +23,11 @@ class AuthenticationActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_authentication)
 
         binding.authButton.setOnClickListener { launchSignInFlow() }
-
+        FirebaseUserLiveData().observe(this) { firebaseUser ->
+            if (firebaseUser != null) {
+                goToReminders()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -30,25 +35,23 @@ class AuthenticationActivity : AppCompatActivity() {
         if (requestCode == SIGN_IN_RESULT_CODE) {
             val response = IdpResponse.fromResultIntent(data)
             if (resultCode == Activity.RESULT_OK) {
-                // User successfully signed in
                 Log.i(
                     TAG,
                     "Successfully signed in user ${FirebaseAuth.getInstance().currentUser?.displayName}!"
                 )
                 Toast.makeText(this, "SignIn Successfull", Toast.LENGTH_LONG).show()
-                val intent = Intent(this, RemindersActivity::class.java)
-                startActivity(intent)
-                finish()
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
                 Log.i(TAG, "Sign in unsuccessful ${response?.error?.errorCode}")
                 Toast.makeText(this, "SignIn failed", Toast.LENGTH_LONG).show()
             }
         }
     }
 
+    private fun goToReminders() {
+        val intent = Intent(this, RemindersActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 
     private fun launchSignInFlow() {
         val providers = arrayListOf(
@@ -69,5 +72,4 @@ class AuthenticationActivity : AppCompatActivity() {
         const val TAG = "MainFragment"
         const val SIGN_IN_RESULT_CODE = 1001
     }
-
 }
