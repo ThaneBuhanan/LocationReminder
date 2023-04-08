@@ -20,9 +20,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
@@ -34,8 +34,8 @@ import com.udacity.project4.databinding.FragmentSaveReminderBinding
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
-import org.koin.android.ext.android.inject
 import java.util.*
+import org.koin.android.ext.android.inject
 
 const val ACTION_GEOFENCE_EVENT = "ACTION_GEOFENCE_EVENT"
 
@@ -44,6 +44,7 @@ class SaveReminderFragment : BaseFragment() {
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSaveReminderBinding
     private val runningQOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    private val runningTiramisuOrLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
     private lateinit var activityResultLauncherPermissions: ActivityResultLauncher<Array<String>>
     private lateinit var activityResultLauncherLocation: ActivityResultLauncher<IntentSenderRequest>
     private val geofencingClient: GeofencingClient by lazy {
@@ -138,85 +139,77 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     private fun checkPermissionsAndStartGeofencing() {
-        if (foregroundLocationPermissionApproved() && backgroundLocationPermissionApproved()) {
+        if (allPermissionsApproved()) {
             checkDeviceLocationSettingsAndStartGeofence()
         } else {
-            if (!foregroundLocationPermissionApproved()) {
+            if (!isForegroundLocationPermissionApproved()) {
                 requestForegroundLocationPermissions()
-            }
-            if (!backgroundLocationPermissionApproved()) {
-                requestBackgroundLocationPermission()
-            }
-            if (foregroundLocationPermissionApproved() && backgroundLocationPermissionApproved()) {
-                checkDeviceLocationSettingsAndStartGeofence()
-            }
-        }
-    }
-
-    private fun requestForegroundLocationPermissions() {
-        when {
-            foregroundLocationPermissionApproved() -> {
                 return
             }
-
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                Snackbar.make(
-                    binding.fragmentSaveReminder,
-                    R.string.permission_denied_explanation, Snackbar.LENGTH_LONG
-                )
-                    .setAction(R.string.settings) {
-                        // Displays App settings screen.
-                        startActivity(Intent().apply {
-                            action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                            data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        })
-                    }.show()
+            if (!isBackgroundLocationPermissionApproved()) {
+                requestBackgroundLocationPermission()
+                return
             }
-            else -> {
-                activityResultLauncherPermissions.launch(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                )
+            if (!isNotificationPermissionApproved()) {
+                requestNotificationPermission()
+                return
             }
         }
     }
 
-    private fun foregroundLocationPermissionApproved(): Boolean {
+    private fun Fragment.hasPermission(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_COARSE_LOCATION
+            permission,
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun isForegroundLocationPermissionApproved(): Boolean {
+        return hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                && hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+    }
+
     @TargetApi(Build.VERSION_CODES.Q)
-    private fun backgroundLocationPermissionApproved(): Boolean {
-        if (runningQOrLater) {
-            return ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
+    private fun isBackgroundLocationPermissionApproved(): Boolean {
+        if (!runningQOrLater) {
             return true
         }
+
+        return hasPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    }
+
+    @TargetApi(Build.VERSION_CODES.TIRAMISU)
+    private fun isNotificationPermissionApproved(): Boolean {
+        if (!runningTiramisuOrLater) {
+            return true
+        }
+
+        return hasPermission(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    private fun allPermissionsApproved(): Boolean {
+        return isForegroundLocationPermissionApproved() &&
+                isBackgroundLocationPermissionApproved() &&
+                isNotificationPermissionApproved()
+    }
+
+    private fun requestForegroundLocationPermissions() {
+        activityResultLauncherPermissions.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
 
     @TargetApi(Build.VERSION_CODES.Q)
     private fun requestBackgroundLocationPermission() {
-        if (backgroundLocationPermissionApproved()) {
-            checkDeviceLocationSettingsAndStartGeofence()
-            return
-        }
-        if (runningQOrLater) {
-            activityResultLauncherPermissions.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
-        } else {
-            return
-        }
+        activityResultLauncherPermissions.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+    }
+
+    @TargetApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        activityResultLauncherPermissions.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
     }
 
     private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true) {
@@ -254,6 +247,7 @@ class SaveReminderFragment : BaseFragment() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun addGeofenceForReminder() {
         val geofence = Geofence.Builder()
             .setRequestId(newReminder.id)
@@ -271,13 +265,6 @@ class SaveReminderFragment : BaseFragment() {
             .addGeofence(geofence)
             .build()
 
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
             addOnSuccessListener {
                 Log.e("Add Geofence", geofence.requestId)
@@ -297,7 +284,6 @@ class SaveReminderFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        //make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
     }
 }
