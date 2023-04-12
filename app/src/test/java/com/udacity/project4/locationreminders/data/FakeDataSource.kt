@@ -39,4 +39,8 @@ class FakeDataSource : ReminderDataSource {
     override suspend fun deleteAllReminders() {
         list.clear()
     }
+
+    suspend fun addReminders(vararg reminders: ReminderDTO) {
+        reminders.forEach { saveReminder(it) }
+    }
 }
