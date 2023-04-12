@@ -140,7 +140,7 @@ class ReminderListFragmentTest :
         launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
 
         // WHEN - Details fragment launched to display task
-        onView(withText("No reminders found"))
+        onView(withText("error message"))
             .check(matches(isDisplayed()))
     }
 
